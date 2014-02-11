@@ -1,4 +1,4 @@
-express-genomewide
+express-full-genome
 ==================
 
 Expand eXpress from RNA-seq to any genome wide high throughput sequencing assay
