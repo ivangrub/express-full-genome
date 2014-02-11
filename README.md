@@ -6,7 +6,7 @@ Expand eXpress from RNA-seq to any genome wide high throughput sequencing assay
 
 ##Setup
 
-Install python (v2.7), pysam and numpy (python modules), samtools, bowtie, express
+Install python (v2.7), pysam, scipy, numpy and BioPython (python modules), samtools, bowtie, express
 
 Create environmental variables: $BOWTIE_INDEXES and $EXPRESS_FILES
 
