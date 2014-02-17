@@ -21,7 +21,7 @@ BinnedFasta.py takes the following arguments
 
 Example:
 
-`` BinnedFasta.py -g mm9.fa -l 50 -b 20 ``
+`` BinnedFasta.py -g mm9.fa -l 50 -b 200 ``
 
 **Map reads to reference genome**
 
