@@ -41,7 +41,7 @@ def AddtoBin(read,ref):
 	bin = b.split('!')
 	try:	
 		chr = bin[1]
-		start = int(read.pos) + int(bin[2])
+		start = int(read.pos) + int(bin[2]) - 1
 	except IndexError:
 		chr = b
 		start = int(read.pos)

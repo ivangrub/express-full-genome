@@ -76,7 +76,7 @@ print 'Load binned header'
 conv = pys.Samfile('%s/Header_%s_%s_%s.sam' % (path,args.g,args.b,args.l),'r')
 if args.r is '-' and args.o is '-':
 	print 'Create template for converted BAM'
-	convbam = pys.Samfile('-','wb',template = conv)
+	convbam = pys.Samfile('-','w',template = conv)
 elif args.r is '-':
 	print 'Create template for converted BAM'
 	convbam = pys.Samfile('%s_converted.bam' % args.o,'wb',template = conv)

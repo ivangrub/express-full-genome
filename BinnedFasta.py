@@ -36,9 +36,9 @@ def print_fasta(pos,seq,header,count):
 	chr = binnum[1]
 	coor1 = int(binnum[2])-1
 	coor2 = int(binnum[3])-1
-	s = seq[coor1:coor2].upper()
+	s = seq[coor1:coor2+1].upper()
 	if len(s) != coor2-coor1:
-		m = len(seq[coor1:coor2])
+		m = len(seq[coor1:coor2+1])
 		en = coor2-coor1
 		s2 = s + 'N'*(en-m)
 		header.write('@SQ\tSN:%s\tLN:%d\n' % (pos,int(args.b)-1))
