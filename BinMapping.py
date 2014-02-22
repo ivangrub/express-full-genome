@@ -33,22 +33,11 @@ def gen2bin(infile,convbam,read,chrlist,bin,headlist,cc):
 
 	read.pos = off
 	read.tid = convbam.gettid(name)
-	# indice = [-1,0,1]
-	# for ran in indice:
-	# 	try:
-	# 		if (convbam.getrname(y-k+1+ran) not in headlist):
-	# 			headlist.add(convbam.getrname(y-k+1+ran))
-	# 			binheader.write('@SQ\tSN:%s\tLN:%d\n' % (convbam.getrname(y-k+1+ran),int(args.b)-1))
-	# 		else:
-	# 			continue
-	# 	except ValueError:
-	# 		continue
 
 	if (cc % 1000000 == 0):
-		print '%d reads done' % cc
+		print '%d alignments processed' % cc
 
-	convbam.write(read)	
-	return headlist	
+	convbam.write(read)		
 
 def TrimBAM(conv,nheader):
 	trimmed = pys.Samfile('%s_trimmed.bam' % args.o,'wb',template=nheader)
@@ -85,9 +74,12 @@ else:
 
 print 'Load binned header'
 conv = pys.Samfile('%s/Header_%s_%s_%s.sam' % (path,args.g,args.b,args.l),'r')
-if args.r is '-':
+if args.r is '-' and args.o is '-':
 	print 'Create template for converted BAM'
-	convbam = pys.Samfile('-','wb',template = infile)
+	convbam = pys.Samfile('-','wb',template = conv)
+elif args.r is '-':
+	print 'Create template for converted BAM'
+	convbam = pys.Samfile('%s_converted.bam' % args.o,'wb',template = conv)
 else:
 	print 'Create template for converted BAM'
 	convbam = pys.Samfile('%s_converted.bam' % args.o,'wb',template = conv)
@@ -116,9 +108,7 @@ count = 0
 for line in infile:
 	if line.is_unmapped:
 		continue
-	# if args.r is '-':
-	# 	convbam.write(line)
-	headlist = gen2bin(infile,convbam,line,chrindex,binning,headlist,count)
+	gen2bin(infile,convbam,line,chrindex,binning,headlist,count)
 	count += 1
 
 convbam.close()
