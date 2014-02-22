@@ -116,8 +116,8 @@ count = 0
 for line in infile:
 	if line.is_unmapped:
 		continue
-	if args.r is '-':
-		outbam.write(line)
+	# if args.r is '-':
+	# 	convbam.write(line)
 	headlist = gen2bin(infile,convbam,line,chrindex,binning,headlist,count)
 	count += 1
 
