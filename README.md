@@ -52,6 +52,12 @@ Example:
 
 ``express -o output_dir --output-align-samp $EXPRESS_FILES/eXpress_200bp_50.mm9.fa aligned.200bp.k100_converted.bam``
 
+**Stream above steps**
+
+To avoid creating multiple large BAM files, it is possible to stream the mapping into eXpress and then save a significantly smaller final file. 
+
+``bzip2 -dc reads.fastq.bz2 | bowtie -c -q -v 2 -aS mm9 - | BinMapping.py -g mm9.fa -l 50 -b 200 -r - -o - | samtools view -h - | express -o --output-dir --output-align-samp -B 1 $EXPRESS_FILES/eXpress_200bp_50.mm9.fa``
+
 **Map target sequence alignments back to the reference genome**
 
 eXpress2wiggle.py takes the following arguments
