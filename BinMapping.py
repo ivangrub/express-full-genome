@@ -4,7 +4,8 @@ import pysam as pys
 import argparse
 import os
 
-def gen2bin(infile,convbam,read,chrlist,bin,headlist,cc):
+def gen2bin(infile,convbam,read,chrlist,bin,cc):
+	#Find the appropriate bin and update the tid in the BAM file
 	chrom = infile.getrname(read.tid)
 	ind = int(round(read.pos/float(bin-1)))
 	chrst = int(chrlist[chrom])
@@ -39,16 +40,8 @@ def gen2bin(infile,convbam,read,chrlist,bin,headlist,cc):
 
 	convbam.write(read)		
 
-def TrimBAM(conv,nheader):
-	trimmed = pys.Samfile('%s_trimmed.bam' % args.o,'wb',template=nheader)
-	for read in conv:
-		binid = conv.getrname(read.tid)
-		index = trimmed.gettid(binid)
-		read.tid = index
-		trimmed.write(read)
-	trimmed.close()
-
 def offset(conv):
+	# Establish the offset 
 	n1 = conv.getrname(2)
 	x = n1.split('!')
 	start = int(x[2])
@@ -58,12 +51,13 @@ def offset(conv):
 	off = end - start + 1
 	return off
 
+# Input paramaters
 parser = argparse.ArgumentParser(description='Put mapped reads into BAM format in chromosomal and express coordinates')
 parser.add_argument('-r',help ='Read file name. SAM/BAM format.',default = '')
-parser.add_argument('-l',default='50')
-parser.add_argument('-g',default='mm9_norandom')
-parser.add_argument('-o',default='outputted')
-parser.add_argument('-b',default=1000)
+parser.add_argument('-l',default=50)
+parser.add_argument('-g',default='mm9.fa')
+parser.add_argument('-o',default=None)
+parser.add_argument('-b',default=200)
 args = parser.parse_args()
 
 path = os.environ['EXPRESS_FILES']
@@ -72,61 +66,35 @@ if args.r is '-':
 else:
 	infile = pys.Samfile(args.r,'rb')
 
-print 'Load binned header'
+# Load binned header
 conv = pys.Samfile('%s/Header_%s_%s_%s.sam' % (path,args.g,args.b,args.l),'r')
-if args.r is '-' and args.o is '-':
-	print 'Create template for converted BAM'
+
+# Create template for converted BAM
+if args.r is '-' and (args.o is '-' or args.o is None):
 	convbam = pys.Samfile('-','wb',template = conv)
 elif args.r is '-':
-	print 'Create template for converted BAM'
 	convbam = pys.Samfile('%s_converted.bam' % args.o,'wb',template = conv)
 else:
-	print 'Create template for converted BAM'
 	convbam = pys.Samfile('%s_converted.bam' % args.o,'wb',template = conv)
 
-#bindict = {}
-#index = 0
-#for ref in conv.header['SQ']:
-#	bindict[ref["SN"]] = index
-#	index += 1
-
-print 'Building conversion headers'
+# Building conversion headers
 chrind = open('%s/chrindex_%s_%s_%s.txt' % (path,args.g,args.b,args.l),'r')
 chrindex = {}
 for line in chrind:
 	s = line.strip().split('\t')
 	chrindex[s[0]] = s[1]
 chrind.close()
-print 'Getting the offset'
+
+# Getting the offset
 binning = offset(conv)
 
-print 'Binning the alignments - Might take a long time'
-binheader = open('newheaders.txt','w')
-binheader.write('@HD\tVN:1.0\n')
-headlist = set()
+# Read through the input alignments
 count = 0
 for line in infile:
 	if line.is_unmapped:
 		continue
-	gen2bin(infile,convbam,line,chrindex,binning,headlist,count)
+	gen2bin(infile,convbam,line,chrindex,binning,count)
 	count += 1
 
 convbam.close()
 conv.close()
-# conv = pys.Samfile('%s_converted.bam' % args.o,'rb')
-
-# binheader.close()
-# print 'Making new header'
-# newheader = pys.Samfile('newheaders.txt','r')
-
-# print 'Trimming and updating tid'
-# TrimBAM(conv,newheader)
-# conv.close()
-# newheader.close()
-# if args.r is '-':
-# 	outbam.close()
-
-# infile.close()
-
-
-
